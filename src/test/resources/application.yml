@@ -2,6 +2,6 @@ spring:
   datasource:
     username: SA
     password: ""
-    url: jdbc:hsqldb:file:./groups_database;ifexists=true;shutdown=true
+    url: jdbc:hsqldb:file:./groups_database;shutdown=true
   jpa:
     database-platform: org.hibernate.dialect.HSQLDialect

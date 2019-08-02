@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,11 +63,13 @@ public class GroupController {
 
     @GetMapping
     public ResponseEntity<List<GroupDTO>> getGroups(@RequestParam(name = "_limit", defaultValue = "100") Integer batchSize,
-                                                    @RequestParam(name = "_offset", defaultValue = "0") Integer offset) {
+                                                    @RequestParam(name = "_offset", defaultValue = "0") Integer offset,
+                                                    HttpServletRequest request) {
         return groupTimer.record(()-> {
+            String hostname = request.getHeader("Host");
             Pageable page = PageRequest.of(offset, batchSize);
             Page<GroupDAO> results = this.repository.findAll(page);
-            String nextUrl = "/group/v1?_offset=" + (batchSize + offset) + "&_limit=" + batchSize;
+            String nextUrl = "http://"+ hostname +"/group/v1?_offset=" + (offset + 1) + "&_limit=" + batchSize;
             String link = "<" + nextUrl + ">; rel = \"next\"; title = \"next page\"; total = " + results.getTotalElements();
 
             List<GroupDTO> groups = results.get()
