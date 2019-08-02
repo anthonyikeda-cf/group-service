@@ -28,6 +28,7 @@ public class GroupController {
     private Counter groupCreateCounter;
     private Counter groupDeleteCounter;
     private Timer groupTimer;
+    private Timer getTimer;
     private GroupRepository repository;
 
     @Autowired
@@ -35,6 +36,7 @@ public class GroupController {
         this.groupCreateCounter = registry.counter("group.create");
         this.groupDeleteCounter = registry.counter("group.delete");
         this.groupTimer = registry.timer("create.group");
+        this.getTimer = registry.timer("get.groups.all");
 
         this.repository = repository;
     }
@@ -65,7 +67,7 @@ public class GroupController {
     public ResponseEntity<List<GroupDTO>> getGroups(@RequestParam(name = "_limit", defaultValue = "100") Integer batchSize,
                                                     @RequestParam(name = "_offset", defaultValue = "0") Integer offset,
                                                     HttpServletRequest request) {
-        return groupTimer.record(()-> {
+        return getTimer.record(()-> {
             String hostname = request.getHeader("Host");
             Pageable page = PageRequest.of(offset, batchSize);
             Page<GroupDAO> results = this.repository.findAll(page);
