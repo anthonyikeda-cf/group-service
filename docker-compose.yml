@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    networks:
+      - group_network
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ${PWD}/src/main/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    networks:
+      - group_network
+  database:
+    image: postgres:11
+    environment:
+      POSTGRES_USER: group_admin
+      POSTGRES_PASSWORD: groupsareverybusy
+      POSTGRES_DB: groups_database
+    networks:
+      - group_network
+  group-service:
+    build:
+      dockerfile: src/main/docker/service/Dockerfile
+      context: ${PWD}
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/groups_database
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "info,health,prometheus,metrics"
+    ports:
+      - 8080:8080
+    networks:
+      - group_network
+
+
+networks:
+  group_network:

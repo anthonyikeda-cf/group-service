@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    username: group_admin
+    password: groupsareverybusy
+    url: jdbc:postgresql://localhost:5432/groups_database
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.jdbc.lob.non_contextual_creation: true

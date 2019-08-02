@@ -1,0 +1,58 @@
+= Group Service
+Anthony Ikeda <anthony.ikeda@cognizant.com>
+v1.0, 2019-08-02
+:toc:
+:icons: font
+
+== Overview
+
+A sample API for performing a couple of tasks:
+
+* Create an integrated API to perform ETL tests on
+* Demonstrate http://micrometer.io[Micrometer] monitoring
+* Demonstrate https://grafana.com[Grafana] and http://prometheus.io[Prometheus] integration with Micrometer
+* Test https://airflow.apache.org[Apache Airflow] DAGs with
+
+== Architecture
+
+There is 1 Spring Boot 2 Microservice (group-service), PostgreSQL 11 database, Prometheus server and Grafana.
+
+
+== Configuring Grafana
+
+When starting up the stack with docker compose, you need to configure grafana.
+
+. First login as user: admin password: admin
+. Next you need to add a datasource pointing to http://prometheus:9090
+. Now import the dashboard from the `src/main/grafana/dashboard.json` file
+.. You should see 4 panels capturing metrics. If you hit the API you'll see the panels change
+
+TIP: There is a unit test `GroupControllerIntegrationTest#createGroups` that will create 100 groups against the API.
+
+== Monitoring
+
+There are very basic monitoring metrics in place.
+
+First instead of creating different names for the time it takes to create/get/delete a group
+the same Timer is used across all the endpoints so there is technically an incorrect usage here
+but it's purely and example.
+
+There are 2 counter: groups_created & groups_deleted that keep track of the details their names describe.
+
+
+== Pagination
+
+The `GET /groups/v1` endpoint is paginated so that it mimcs the system that we plan to test.
+
+When you run a request, it defaults to a limit of 100 results and stats at record 0. You can specify the sizes of
+both with `_limit` and `_offset` query parameters.
+
+Calling the endpoint will result in the dataset (in JSON) and a header called `link` that contains
+the data if there are more results.
+
+The link is formatted as:
+
+`link: "<http://localhost:8080/group/v1?_limit=100&_offset=100>, rel = "next", title = "next page", total = 10000"`
+
+The one difference with this API to the one that we want to test is the addition of the `total` attribute.
+
