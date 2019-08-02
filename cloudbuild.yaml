@@ -1,0 +1,13 @@
+steps:
+  - name: 'openjdk:12.0.2-oracle'
+    entrypoint: 'bash'
+    args: ['-c', './mvnw clean install']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build',
+           '-t', 'gcr.io/$PROJECT_ID/group-api:$COMMIT_SHA',
+           '-t', 'gcr.io/$PROJECT_ID/group-api:latest',
+           '-f', 'src/main/docker/Dockerfile', '.']
+images:
+  - 'gcr.io/$PROJECT_ID/group-api:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/group-api:latest'
+
