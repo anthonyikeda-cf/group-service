@@ -14,14 +14,13 @@ import java.util.Locale;
 import java.util.stream.IntStream;
 
 public class GroupControllerIntegrationTest {
-
-    @Test
     @Ignore
+    @Test
     public void createGroups() {
         Faker faker = new Faker();
 
         RestTemplate template = new RestTemplate();
-        IntStream.range(1, 100).forEach(index -> {
+        IntStream.range(1, 3000).forEach(index -> {
             GroupDTO dto = new GroupDTO();
             dto.setGroupName(faker.name().fullName());
             dto.setDescription(faker.address().fullAddress());
