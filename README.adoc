@@ -56,3 +56,16 @@ The link is formatted as:
 
 The one difference with this API to the one that we want to test is the addition of the `total` attribute.
 
+== Deploying to Kubernetes
+
+First create the secrets for the PostgreSQL database:
+
+[source,bash]
+$ kubectl create secret generic postgresCreds --from-file=./username.txt --from-file=./password.txt
+
+Next the service account:
+
+[source,bash]
+$ kubectl create secret generic cloudsql-instance-credentials --from-file=./test-jira-232517-504df8e8b9a7.json
+
+
