@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+  namespace: monitoring
+data:
+  grafana_ini: |
+    instance_name: ${HOSTNAME}
+    [security]
+    admin_user = admin
+  promethues_datasource: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: direct
+        url: http://prometheus-svc:9090
+        editable: false
+
+
