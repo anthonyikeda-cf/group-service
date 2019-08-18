@@ -68,4 +68,22 @@ Next the service account:
 [source,bash]
 $ kubectl create secret generic cloudsql-instance-credentials --from-file=./test-jira-232517-504df8e8b9a7.json
 
+== Configure GCR Pull
 
+. Generate an service account
+. Generate a JSON key
+. Update the k8s secrets
+
+[source,bash]
+$ kubectl create secret docker-registry $SECRETNAME \
+  --docker-server=https://gcr.io \
+  --docker-username=_json_key \
+  --docker-email=user@example.com \
+  --docker-password="$(cat k8s-gcr-auth-ro.json)"
+
+kubectl create secret docker-registry gcr-pull \
+    --docker-server=https://gcr.io \
+    --docker-username=_json_key \
+    --docker-email=anthony.ikeda@gmail.com \
+    --docker-password="$(cat test-jira-k8s-gcr-auth-ro.json)" \
+    --namespace=groups

@@ -4,7 +4,7 @@ metadata:
   name: postgres-pvc
   labels:
     type: postgres-pvc
-  namespace: groups
+  namespace: utils
 spec:
   accessModes:
     - ReadWriteOnce

@@ -7,6 +7,7 @@ metadata:
     svc: postgres
 spec:
   serviceName: postgres
+  replicas: 1
   selector:
     matchLabels:
       svc: postgres
@@ -26,13 +27,13 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  key: postgres-creds
-                  name: username.txt
+                  name: postgres-creds
+                  key: username.txt
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: postgres-creds
-                  name: password.txt
+                  name: postgres-creds
+                  key: password.txt
             - name: POSTGRES_DB
               value: groups_database
       volumes:
