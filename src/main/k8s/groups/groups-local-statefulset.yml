@@ -4,16 +4,25 @@ metadata:
   name: group-api
   labels:
     api: group
+  namespace: groups
+
 spec:
   serviceName: group-api
+  replicas: 1
   selector:
     matchLabels:
       api: group
   template:
+    metadata:
+      labels:
+        api: group
     spec:
+      imagePullSecrets:
+        - name: gcr-pull
       containers:
         - name: group-api
           image: gcr.io/test-jira-232517/group-api:latest
+          imagePullPolicy: Always
           resources:
             requests:
               cpu: "20m"
@@ -22,18 +31,22 @@ spec:
             - containerPort: 8080
               name: serverport
           env:
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: "info,health,prometheus,metrics"
+            - name: SPRING_JPA_DATABASE_PLATFORM
+              value: org.hibernate.dialect.PostgreSQLDialect
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgres://postgres-service.utils:5432/groups_database
+              value: jdbc:postgresql://postgres-service.utils:5432/groups_database
             - name: SPRING_DATASOURCE_USER
               valueFrom:
-                - secretKeyRef:
-                    name: postgresCreds
-                    key: username.txt
+                secretKeyRef:
+                  name: postgres-creds
+                  key: username.txt
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
-                - secretKeyRef:
-                    name: postgresCreds
-                    key: password.txt
+                secretKeyRef:
+                  name: postgres-creds
+                  key: password.txt
           readinessProbe:
             httpGet:
               path: /actuator/health
@@ -52,19 +65,3 @@ spec:
             timeoutSeconds: 2
             failureThreshold: 1
             successThreshold: 1
-        - name: cloudsql-proxy
-          image: gcr.io/cloudsql-docker/gce-proxy:1.11
-          command: ["/cloud_sql_proxy",
-            "-instances=test-jira-232517:us-central1:jira-database=tcp:0.0.0.0:5432",
-          "-credential_file=/secrets/cloudsql/credentials.json"]
-          securityContext:
-            runAsUser: 2
-            allowPrivilegeEscalation: false
-          volumeMounts:
-            - mountPath: /secrets/cloudsql
-              name: cloudsql-instance-credentials
-              readOnly: true
-      volumes:
-        - name: cloudsql-instance-credentials
-          secret:
-            secretName: cloudsql-instance-credentials
