@@ -59,6 +59,6 @@ data:
         metrics_path: '/actuator/prometheus'
         scrape_interval: 5s
         static_configs:
-          - targets: ['group-service:8080']
+          - targets: ['group-service.groups:8080']
 
 
