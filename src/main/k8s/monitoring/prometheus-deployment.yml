@@ -10,6 +10,9 @@ spec:
     matchLabels:
       svc: prometheus
   template:
+    metadata:
+      labels:
+        svc: prometheus
     spec:
       containers:
         - name: prometheus
@@ -20,7 +23,7 @@ spec:
       volumes:
         - name: prometheus-config
           configMap:
-            name: groups-config
+            name: monitoring-config
             items:
               - key: prometheus.yml
                 path: prometheus.yml
