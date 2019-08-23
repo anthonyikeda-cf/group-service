@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: group-service
+  labels:
+    api: group
+spec:
+  selector:
+    api: group
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      protocol: TCP
+      name: service
+      targetPort: 8080
