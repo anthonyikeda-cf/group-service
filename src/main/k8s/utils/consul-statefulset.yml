@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: consul-pods
+  labels:
+    svc: consul
+  namespace: utils
+spec:
+  serviceName: consul
+  replicas: 1
+  selector:
+    matchLabels:
+      svc: consul
+  template:
+    metadata:
+      labels:
+        svc: consul
+    spec:
+      containers:
+        - name: consul
+          image: consul:1.5.3
+          command:
+            - "consul"
+            - "agent"
+            - "-config-file=/consul/myconfig/config.json"
+          volumeMounts:
+            - mountPath: /consul/data
+              name: consul-pvc
+            - mountPath: /consul/myconfig
+              name: consul-config
+#        - name: consul-node
+#          image: consul:1.5.3
+#          command:
+#            - "consul"
+#            - "agent"
+#            - "-config-file=/consul/myconfig/node-config.json"
+#          volumeMounts:
+#            - mountPath: /consul/data
+#              name: consul-agent-pvc
+#            - mountPath: /consul/myconfig
+#              name: consul-agent-config
+      volumes:
+        - name: consul-pvc
+          persistentVolumeClaim:
+            claimName: consul-pvc
+        - name: consul-agent-pvc
+          persistentVolumeClaim:
+            claimName: consul-node-pvc
+        - name: consul-config
+          configMap:
+            name: utils-config
+            items:
+              - key: consul_config
+                path: config.json
+        - name: consul-agent-config
+          configMap:
+            name: utils-config
+            items:
+              - key: consul_agent_config
+                path: node-config.json
