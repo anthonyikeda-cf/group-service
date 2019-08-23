@@ -1,10 +1,8 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: consul-pvc
+  name: vault-logs-claim
   namespace: utils
-  labels:
-    pvc: consul
 spec:
   accessModes:
     - ReadWriteOnce
@@ -16,10 +14,8 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: consul-node-pvc
+  name: vault-files-claim
   namespace: utils
-  labels:
-    pvc: consul-node
 spec:
   accessModes:
     - ReadWriteOnce
