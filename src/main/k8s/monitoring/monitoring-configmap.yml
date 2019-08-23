@@ -61,4 +61,3 @@ data:
         static_configs:
           - targets: ['group-service.groups:8080']
 
-
