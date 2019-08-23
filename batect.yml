@@ -1,0 +1,17 @@
+containers:
+  build-env:
+    image: openjdk:13-oracle
+    volumes:
+      - local: .
+        container: /code
+        options: cached
+      - local: .mvnCache
+        container: /home/container-user/.m2
+        options: cached
+tasks:
+  build:
+    description: |
+      Application build and unit test
+    run:
+      container: build-env
+      command: ./mvnw clean install

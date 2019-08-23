@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: utils-config
+  namespace: utils
+data:
+  consul_config: |
+    {
+      "datacenter" : "central-gc",
+      "data_dir" : "/consul/data",
+      "log_level" : "INFO",
+      "node_name" : "groups-consul",
+      "bootstrap" : true,
+      "server" : true,
+      "bind_addr" : "0.0.0.0",
+      "client_addr" : "0.0.0.0",
+      "ui" : true,
+      "addresses" : {
+        "http" : "0.0.0.0"
+      },
+      "telemetry" : {
+        "prometheus_retention_time" : "30s"
+      }
+    }
+  consul_agent_config: |
+    {
+      "datacenter" : "central-gc",
+      "data_dir" : "/consul/data",
+      "log_level" : "INFO",
+      "node_name" : "groups-node",
+      "server" : false,
+      "bind_addr" : "0.0.0.0",
+      "telemetry" : {
+        "prometheus_retention_time" : "30s"
+      }
+    }
+  vault_config: |
+    storage "consul" {
+      address = "consul-service:8500"
+      path = "vault"
+    }
+
+    disable_mlock = true
+    ui = true
+
+    listener "tcp" {
+      address = "0.0.0.0:8200"
+      tls_disable = 1
+    }
+
+    telemetry {
+      prometheus_retention_time = "30s",
+      disable_hostname = true
+    }

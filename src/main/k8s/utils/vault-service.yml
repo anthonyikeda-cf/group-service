@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault-service
+  namespace: utils
+  labels:
+    svc: vault-service
+spec:
+  type: LoadBalancer
+  selector:
+    svc: vault
+  ports:
+    - port: 8200
+      targetPort: 8200
+      protocol: TCP
+      name: vault-web

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: utils
+  name: vault-statefulset
+  labels:
+    svc: vault
+spec:
+  serviceName: vault
+  selector:
+    matchLabels:
+      svc: vault
+  template:
+    metadata:
+      labels:
+        svc: vault
+    spec:
+      containers:
+        - name: vault-pod
+          image: vault:1.2.1
+          command:
+            - "vault"
+            - "server"
+            - "-config=/vault/myconfig/config.hcl"
+          env:
+            - name: VAULT_API_ADDR
+              value: "http://vault-service:8200"
+          volumeMounts:
+            - mountPath: /vault/logs
+              name: vault-logs
+            - mountPath: /vault/files
+              name: vault-files
+            - mountPath: /vault/myconfig
+              name: vault-config
+      volumes:
+        - name: vault-logs
+          persistentVolumeClaim:
+            claimName: vault-logs-claim
+        - name: vault-files
+          persistentVolumeClaim:
+            claimName: vault-files-claim
+        - name: vault-config
+          configMap:
+            name: utils-config
+            items:
+              - key: vault_config
+                path: config.hcl
