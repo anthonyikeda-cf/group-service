@@ -87,3 +87,22 @@ kubectl create secret docker-registry gcr-pull \
     --docker-email=anthony.ikeda@gmail.com \
     --docker-password="$(cat test-jira-k8s-gcr-auth-ro.json)" \
     --namespace=groups
+
+== Consul
+
+Consul is used purely as a store solution for Vault. In a k8s environment it doesn't really make
+sense (in this context) to use Consul for:
+
+. Service Discovery
+. Config management
+
+For this demo Config maps or EnvVars will be used for configuration since 1 k8s cluster
+represents 1 environment.
+
+== Vault
+
+Vault will be used to manage PostgreSQL access and general secret management.
+
+Once Vault is started, a Job is run which primes Vault storing the root tokens in the secrets
+and then configuring the postgresql connection.
+

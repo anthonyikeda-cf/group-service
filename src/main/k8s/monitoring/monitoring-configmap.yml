@@ -39,12 +39,12 @@ data:
           - targets: ['127.0.0.1:9090']
 
       - job_name: 'consul'
-        metrics_path: "/v1/sgent/metrics"
+        metrics_path: "/v1/agent/metrics"
         scrape_interval: 5s
         params:
           format: ['prometheus']
         static_configs:
-          - targets: ['consul:8600']
+          - targets: ['consul-service.utils:8500']
 
       - job_name: 'vault'
         metrics_path: "/v1/sys/metrics"
