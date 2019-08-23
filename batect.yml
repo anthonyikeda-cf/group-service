@@ -8,10 +8,11 @@ containers:
       - local: .mvnCache
         container: /home/container-user/.m2
         options: cached
+    working_directory: /code
 tasks:
   build:
     description: |
       Application build and unit test
     run:
       container: build-env
-      command: ./mvnw clean install
+      command: "./mvnw clean install"
