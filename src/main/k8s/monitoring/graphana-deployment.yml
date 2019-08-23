@@ -22,13 +22,13 @@ spec:
       volumes:
         - name: grafana-datasource
           configMap:
-            name: grafana-config
+            name: monitoring-config
             items:
               - key: promethues_datasource
                 path: promethues_datasource.yml
         - name: grafana-config
           configMap:
-            name: grafana-config
+            name: monitoring-config
             items:
               - key: grafana_ini
                 path: grafana.ini
