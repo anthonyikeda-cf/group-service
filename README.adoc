@@ -87,4 +87,3 @@ kubectl create secret docker-registry gcr-pull \
     --docker-email=anthony.ikeda@gmail.com \
     --docker-password="$(cat test-jira-k8s-gcr-auth-ro.json)" \
     --namespace=groups
-
