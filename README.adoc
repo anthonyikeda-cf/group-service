@@ -56,3 +56,53 @@ The link is formatted as:
 
 The one difference with this API to the one that we want to test is the addition of the `total` attribute.
 
+== Deploying to Kubernetes
+
+First create the secrets for the PostgreSQL database:
+
+[source,bash]
+$ kubectl create secret generic postgresCreds --from-file=./username.txt --from-file=./password.txt
+
+Next the service account:
+
+[source,bash]
+$ kubectl create secret generic cloudsql-instance-credentials --from-file=./test-jira-232517-504df8e8b9a7.json
+
+== Configure GCR Pull
+
+. Generate an service account
+. Generate a JSON key
+. Update the k8s secrets
+
+[source,bash]
+$ kubectl create secret docker-registry $SECRETNAME \
+  --docker-server=https://gcr.io \
+  --docker-username=_json_key \
+  --docker-email=user@example.com \
+  --docker-password="$(cat k8s-gcr-auth-ro.json)"
+
+kubectl create secret docker-registry gcr-pull \
+    --docker-server=https://gcr.io \
+    --docker-username=_json_key \
+    --docker-email=anthony.ikeda@gmail.com \
+    --docker-password="$(cat test-jira-k8s-gcr-auth-ro.json)" \
+    --namespace=groups
+
+== Consul
+
+Consul is used purely as a store solution for Vault. In a k8s environment it doesn't really make
+sense (in this context) to use Consul for:
+
+. Service Discovery
+. Config management
+
+For this demo Config maps or EnvVars will be used for configuration since 1 k8s cluster
+represents 1 environment.
+
+== Vault
+
+Vault will be used to manage PostgreSQL access and general secret management.
+
+Once Vault is started, a Job is run which primes Vault storing the root tokens in the secrets
+and then configuring the postgresql connection.
+

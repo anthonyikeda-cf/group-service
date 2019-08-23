@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: group-api
+  labels:
+    api: group
+  namespace: groups
+
+spec:
+  serviceName: group-api
+  replicas: 1
+  selector:
+    matchLabels:
+      api: group
+  template:
+    metadata:
+      labels:
+        api: group
+    spec:
+      imagePullSecrets:
+        - name: gcr-pull
+      containers:
+        - name: group-api
+          image: gcr.io/test-jira-232517/group-api:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "20m"
+              memory: "2G"
+          ports:
+            - containerPort: 8080
+              name: serverport
+          env:
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: "info,health,prometheus,metrics"
+            - name: SPRING_JPA_DATABASE_PLATFORM
+              value: org.hibernate.dialect.PostgreSQLDialect
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres-service.utils:5432/groups_database
+            - name: SPRING_DATASOURCE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: username.txt
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-creds
+                  key: password.txt
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 1
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 1
+            successThreshold: 1
