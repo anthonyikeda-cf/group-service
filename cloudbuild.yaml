@@ -6,8 +6,9 @@ steps:
     args: ['build',
            '-t', 'gcr.io/$PROJECT_ID/group-api:$COMMIT_SHA',
            '-t', 'gcr.io/$PROJECT_ID/group-api:latest',
+           '-t', 'gcr.io/$PROJECT_ID/group-api:$BRANCH_NAME',
            '-f', 'src/main/docker/service/Dockerfile', '.']
 images:
   - 'gcr.io/$PROJECT_ID/group-api:$COMMIT_SHA'
   - 'gcr.io/$PROJECT_ID/group-api:latest'
-
+  - 'gcr.io/$PROJECT_ID/group-api:$BRANCH_NAME'

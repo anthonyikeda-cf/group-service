@@ -1,5 +1,5 @@
 = Group Service
-Anthony Ikeda <anthony.ikeda@cognizant.com>
+Anthony Ikeda <anthony.ikeda.dev@gmail.com>
 v1.0, 2019-08-02
 :toc:
 :icons: font
