@@ -9,3 +9,12 @@ spring:
       ddl-auto: update
     properties:
       hibernate.jdbc.lob.non_contextual_creation: true
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:9090/auth/realms/search-realm
+        registration:
+          client-id: service-apis
+          client-secret: da17d41c-68b8-44f7-b64b-07e52c7241d3
