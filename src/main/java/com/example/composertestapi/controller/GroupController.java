@@ -1,6 +1,6 @@
 package com.example.composertestapi.controller;
 
-import com.example.composertestapi.GroupRepository;
+import com.example.composertestapi.repository.GroupRepository;
 import com.example.composertestapi.dao.GroupDAO;
 import com.example.composertestapi.dto.GroupDTO;
 import io.micrometer.core.instrument.Counter;
