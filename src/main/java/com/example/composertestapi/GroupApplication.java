@@ -1,10 +1,10 @@
 package com.example.composertestapi;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.security.reactive.ReactiveManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(exclude = { ReactiveManagementWebSecurityAutoConfiguration.class })
+@SpringBootApplication(exclude = { ManagementWebSecurityAutoConfiguration.class.class })
 public class GroupApplication {
 
     public static void main(String[] args) {
