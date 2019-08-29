@@ -43,7 +43,7 @@ public class GroupController {
     }
 
     @PostMapping
-    @PreAuthorize(value = "hasAnyRole(ROLE_manager)")
+    @PreAuthorize(value = "hasAnyRole('ROLE_manager')")
     public ResponseEntity<Void> createGroup(@RequestBody GroupDTO group) {
         return groupTimer.record(() -> {
             GroupDAO dao = new GroupDAO();
@@ -57,7 +57,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/{group_id}")
-    @PreAuthorize(value = "hasAnyRole(ROLE_manager)")
+    @PreAuthorize(value = "hasAnyRole('ROLE_manager')")
     public ResponseEntity<Void> deleteGroup(@PathVariable("group_id") Integer groupId) {
         return groupTimer.record(() -> {
             this.repository.deleteById(groupId);
@@ -67,7 +67,7 @@ public class GroupController {
     }
 
     @GetMapping
-    @PreAuthorize(value = "hasAnyRole(ROLE_manager, ROLE_consumer)")
+    @PreAuthorize(value = "hasAnyRole('ROLE_manager', 'ROLE_consumer')")
     public ResponseEntity<List<GroupDTO>> getGroups(@RequestParam(name = "_limit", defaultValue = "100") Integer batchSize,
                                                     @RequestParam(name = "_offset", defaultValue = "0") Integer offset,
                                                     HttpServletRequest request) {
@@ -92,7 +92,7 @@ public class GroupController {
     }
 
     @GetMapping("/{group_id}")
-    @PreAuthorize(value = "hasAnyRole(ROLE_manager, ROLE_consumer)")
+    @PreAuthorize(value = "hasAnyRole('ROLE_manager', 'ROLE_consumer')")
     public ResponseEntity<GroupDTO> getGroupById(@PathVariable("group_id") Integer id) {
 
         return groupTimer.record(() -> {
