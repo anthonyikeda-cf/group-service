@@ -15,10 +15,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,12 +69,16 @@ public class GroupController {
         });
     }
 
-    @GetMapping
+    @RequestMapping(method = {RequestMethod.GET})
     @PreAuthorize(value = "hasAnyRole('ROLE_manager', 'ROLE_consumer')")
     public ResponseEntity<List<GroupDTO>> getGroups(@RequestParam(name = "_limit", defaultValue = "100") Integer batchSize,
                                                     @RequestParam(name = "_offset", defaultValue = "0") Integer offset,
-                                                    HttpServletRequest request) {
+                                                    HttpServletRequest request,
+                                                    Principal subject,
+                                                    Jwt jwt) {
         return getTimer.record(()-> {
+            log.debug("Username is: {}", subject.getName());
+            log.debug("Jwt: {}", jwt);
             String hostname = request.getHeader("Host");
             Pageable page = PageRequest.of(offset, batchSize);
             Page<GroupDAO> results = this.repository.findAll(page);
@@ -93,8 +100,8 @@ public class GroupController {
 
     @GetMapping("/{group_id}")
     @PreAuthorize(value = "hasAnyRole('ROLE_manager', 'ROLE_consumer')")
-    public ResponseEntity<GroupDTO> getGroupById(@PathVariable("group_id") Integer id) {
-
+    public ResponseEntity<GroupDTO> getGroupById(@PathVariable("group_id") Integer id, @AuthenticationPrincipal Jwt jwt) {
+    log.debug(jwt.toString());
         return groupTimer.record(() -> {
             GroupDAO dao = this.repository.getOne(id);
             GroupDTO group = new GroupDTO();

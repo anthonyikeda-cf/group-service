@@ -11,7 +11,7 @@
     <groupId>com.example</groupId>
     <artifactId>composer-test-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>demo</name>
+    <name>Group Service</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
@@ -53,7 +53,17 @@
         <dependency>
             <groupId>org.springframework.security.oauth.boot</groupId>
             <artifactId>spring-security-oauth2-autoconfigure</artifactId>
-            <version>2.1.7.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-openid</artifactId>
+            <version>5.1.6.RELEASE</version>
         </dependency>
 
         <dependency>
