@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 @EnableResourceServer
 @Configuration
 public class OpenIDResourceServerConfig extends ResourceServerConfigurerAdapter {
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
@@ -17,13 +18,13 @@ public class OpenIDResourceServerConfig extends ResourceServerConfigurerAdapter 
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/*", "/group/v1").permitAll()
                 .antMatchers("/actuator/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/group/v1/*", "/group/v1").authenticated()
-                .antMatchers(HttpMethod.POST, "/group/v1/*", "/group/v1").authenticated();
+                .antMatchers(HttpMethod.GET, "/group/v1/*", "/group/v1").hasAnyAuthority("group-usage")
+                .antMatchers(HttpMethod.POST, "/group/v1/*", "/group/v1").hasAuthority("group-mgmt")
+                .antMatchers(HttpMethod.DELETE, "/group/v1/*").hasAuthority("group-mgmt");
     }
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         resources.resourceId("search");
     }
-
 }
