@@ -9,3 +9,28 @@ spring:
       ddl-auto: update
     properties:
       hibernate.jdbc.lob.non_contextual_creation: true
+
+logging:
+  level:
+    com.example.composertestapi: debug
+    org.springframework.security: debug
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "info,health,metrics,prometheus"
+
+security:
+  oauth2:
+    resource:
+      id: group-service
+      jwt:
+        key-value: |
+          -----BEGIN PUBLIC KEY-----
+          MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0tHFQs7mIotCldsVUIs/WE/ZDHYJlTRxOK9p0maH7B7CVucFtQuUpdeGRgdJd1V2ua9nSFn/edUoevRdVnvK6kdScKVkHhjXtTqKZPOH6hjndFly624csaEaHhFwMavUgrQ2fEUwEDjV3pTEYftH33vBI8hIUdnifhbi8EnL2r6krvPSUmYhZrYI9rHyDuhuBkgRE5GMuJybTzCk3IOxzv1kVL6U4HvvQygzKmXpNRKu2t0zRMudLAvkFxkeC3HnL+ejspgUGUDAxghiMVjATQqQH/QmOevb5409AaYMd93gq+WHbnkAu9UcZdFfnI2mKFrnRXXAb9JfgarpLhsS6wIDAQAB
+          -----END PUBLIC KEY-----
+
+      token-info-uri: http://localhost:9090/auth/realms/search-realm/protocol/openid-connect/token/introspect
+      user-info-uri: http://localhost:9090/auth/realms/search-realm/protocol/openid-connect/userinfo
+      service-id: group-service

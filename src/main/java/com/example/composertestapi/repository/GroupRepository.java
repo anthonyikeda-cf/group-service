@@ -1,4 +1,4 @@
-package com.example.composertestapi;
+package com.example.composertestapi.repository;
 
 import com.example.composertestapi.dao.GroupDAO;
 import org.springframework.data.jpa.repository.JpaRepository;

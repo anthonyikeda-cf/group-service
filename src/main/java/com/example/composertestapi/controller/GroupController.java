@@ -1,6 +1,6 @@
 package com.example.composertestapi.controller;
 
-import com.example.composertestapi.GroupRepository;
+import com.example.composertestapi.repository.GroupRepository;
 import com.example.composertestapi.dao.GroupDAO;
 import com.example.composertestapi.dto.GroupDTO;
 import io.micrometer.core.instrument.Counter;
@@ -14,10 +14,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,8 +69,16 @@ public class GroupController {
     @GetMapping
     public ResponseEntity<List<GroupDTO>> getGroups(@RequestParam(name = "_limit", defaultValue = "100") Integer batchSize,
                                                     @RequestParam(name = "_offset", defaultValue = "0") Integer offset,
-                                                    HttpServletRequest request) {
+                                                    HttpServletRequest request,
+                                                    Principal subject, @AuthenticationPrincipal Object jwt) {
         return getTimer.record(()-> {
+            log.debug(jwt.toString());
+            log.debug("Username is: {}, Class: {}", subject.getName(), subject.getClass().getName());
+            OAuth2Authentication auth = (OAuth2Authentication) subject;
+            log.debug("Credentials: {}, Credentials class: {}",auth.getCredentials(), auth.getCredentials().getClass().getName());
+
+//            auth.getOAuth2Request().getAuthorities().contains("")
+            log.debug("Auth Details: {}", auth.getOAuth2Request().getExtensions());
             String hostname = request.getHeader("Host");
             Pageable page = PageRequest.of(offset, batchSize);
             Page<GroupDAO> results = this.repository.findAll(page);
@@ -88,8 +99,8 @@ public class GroupController {
     }
 
     @GetMapping("/{group_id}")
-    public ResponseEntity<GroupDTO> getGroupById(@PathVariable("group_id") Integer id) {
-
+    public ResponseEntity<GroupDTO> getGroupById(@PathVariable("group_id") Integer id, @AuthenticationPrincipal Object jwt) {
+    log.debug(jwt.toString());
         return groupTimer.record(() -> {
             GroupDAO dao = this.repository.getOne(id);
             GroupDTO group = new GroupDTO();
