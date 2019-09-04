@@ -16,6 +16,7 @@
 
     <properties>
         <java.version>12</java.version>
+        <spring.cloud.version>Greenwich.SR2</spring.cloud.version>
     </properties>
 
     <dependencyManagement>
@@ -25,7 +26,7 @@
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <type>pom</type>
                 <scope>import</scope>
-                <version>Greenwich.SR2</version>
+                <version>${spring.cloud.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
