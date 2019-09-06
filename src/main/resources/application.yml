@@ -1,4 +1,7 @@
 spring:
+  rabbitmq:
+    username: amqpuser
+    password: letmein
   datasource:
     username: group_admin
     password: groupsareverybusy

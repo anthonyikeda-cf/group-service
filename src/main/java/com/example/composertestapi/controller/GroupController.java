@@ -1,8 +1,8 @@
 package com.example.composertestapi.controller;
 
-import com.example.composertestapi.repository.GroupRepository;
 import com.example.composertestapi.dao.GroupDAO;
 import com.example.composertestapi.dto.GroupDTO;
+import com.example.composertestapi.service.GroupService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,16 +30,16 @@ public class GroupController {
     private Counter groupDeleteCounter;
     private Timer groupTimer;
     private Timer getTimer;
-    private GroupRepository repository;
+    private GroupService groupService;
 
     @Autowired
-    public GroupController(MeterRegistry registry, GroupRepository repository) {
+    public GroupController(MeterRegistry registry, GroupService service) {
         this.groupCreateCounter = registry.counter("group.create");
         this.groupDeleteCounter = registry.counter("group.delete");
         this.groupTimer = registry.timer("create.group");
         this.getTimer = registry.timer("get.groups.all");
 
-        this.repository = repository;
+        this.groupService = service;
     }
 
     @PostMapping
@@ -50,8 +48,13 @@ public class GroupController {
             GroupDAO dao = new GroupDAO();
             dao.setGroupName(group.getGroupName());
             dao.setGroupDescription(group.getDescription());
-            GroupDAO saved = this.repository.save(dao);
+            GroupDAO saved = this.groupService.saveGroup(dao);
+
             groupCreateCounter.increment();
+
+            GroupDTO dto = convertDAO(saved);
+            this.groupService.indexGroup(dto);
+
             URI uri = URI.create("/group/v1/" + saved.getGroupId());
             return ResponseEntity.created(uri).build();
         });
@@ -60,7 +63,7 @@ public class GroupController {
     @DeleteMapping("/{group_id}")
     public ResponseEntity<Void> deleteGroup(@PathVariable("group_id") Integer groupId) {
         return groupTimer.record(() -> {
-            this.repository.deleteById(groupId);
+            this.groupService.deleteGroup(groupId);
             groupDeleteCounter.increment();
             return ResponseEntity.ok().build();
         });
@@ -80,19 +83,15 @@ public class GroupController {
 //            auth.getOAuth2Request().getAuthorities().contains("")
             log.debug("Auth Details: {}", auth.getOAuth2Request().getExtensions());
             String hostname = request.getHeader("Host");
-            Pageable page = PageRequest.of(offset, batchSize);
-            Page<GroupDAO> results = this.repository.findAll(page);
+
+            Page<GroupDAO> results = this.groupService.findAll(offset, batchSize);
+
             String nextUrl = "http://"+ hostname +"/group/v1?_offset=" + (offset + 1) + "&_limit=" + batchSize;
             String link = "<" + nextUrl + ">; rel = \"next\"; title = \"next page\"; total = " + results.getTotalElements();
 
             List<GroupDTO> groups = results.get()
-                    .map(dao -> {
-                        GroupDTO dto = new GroupDTO();
-                        dto.setGroupId(dao.getGroupId());
-                        dto.setGroupName(dao.getGroupName());
-                        dto.setDescription(dao.getGroupDescription());
-                        return dto;
-                    }).collect(Collectors.toList());
+                    .map(this::convertDAO)
+                    .collect(Collectors.toList());
 
             return ResponseEntity.status(HttpStatus.OK).header("link", link).body(groups);
         });
@@ -102,13 +101,18 @@ public class GroupController {
     public ResponseEntity<GroupDTO> getGroupById(@PathVariable("group_id") Integer id, @AuthenticationPrincipal Object jwt) {
     log.debug(jwt.toString());
         return groupTimer.record(() -> {
-            GroupDAO dao = this.repository.getOne(id);
-            GroupDTO group = new GroupDTO();
-            group.setGroupId(dao.getGroupId());
-            group.setGroupName(dao.getGroupName());
-            group.setDescription(dao.getGroupDescription());
+            GroupDAO dao = this.groupService.findGroupById(id);
+            GroupDTO group = convertDAO(dao);
             return ResponseEntity.ok(group);
         });
 
+    }
+
+    private GroupDTO convertDAO(GroupDAO dao) {
+        GroupDTO group = new GroupDTO();
+        group.setGroupId(dao.getGroupId());
+        group.setGroupName(dao.getGroupName());
+        group.setDescription(dao.getGroupDescription());
+        return group;
     }
 }
